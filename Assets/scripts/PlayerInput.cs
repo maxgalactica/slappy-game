@@ -15,6 +15,8 @@ public class PlayerInput : MonoBehaviour
 
     public float rotSpeed = 0f;
 
+    public float quaternionTest = 0f;
+
     float degPerFrame = 180f;
 
     // Start is called before the first frame update
@@ -48,10 +50,6 @@ public class PlayerInput : MonoBehaviour
     {
         float triggerMag = Gamepad.current.rightTrigger.EvaluateMagnitude();
 
-        // transform.RotateAround(pivotPos.transform.position, Vector3.left, Gamepad.current.rightTrigger.ReadValue() * degPerFrame * Time.deltaTime);
-
-        // if(triggerMag <= 1 ) transform.RotateAround(pivotPos.transform.position, Vector3.left, triggerMag);
-
-        pivotPos.transform.rotation = new Quaternion(triggerMag, 0, 0, 0);
+        pivotPos.transform.rotation = Quaternion.Euler(triggerMag * 180, 0, 0);
     }
 }
