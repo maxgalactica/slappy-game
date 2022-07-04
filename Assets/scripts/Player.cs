@@ -1,35 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    public GameObject plyHand;
+    PlayerHandControls controls;
 
     public GameObject pivotPos;
+    public TextMeshProUGUI debugTextTop;
+    public TextMeshProUGUI debugTextMiddle;
 
-    public float rotSpeed = 0f;
+    private void Awake()
+    {
+        controls = new PlayerHandControls();
 
-    float degToTurn;
+        controls.Hand.MoveLeftHand.performed += ctx => MoveLeft();
 
+        controls.Hand.MoveLeftHand.performed += ctx => MoveRight();
+    }
 
-    // Start is called before the first frame update
-    void Start()
+    void MoveLeft()
     {
 
     }
 
-    // Update is called once per frame
-    void Update()
+    void MoveRight()
     {
-        if (Keyboard.current.fKey.isPressed)
-        {
-            // TestRotation();
-        }
 
-        Debug.Log(Gamepad.current.rightTrigger.ReadValue().ToString());
     }
 
+    private void OnEnable()
+    {
+        controls.Hand.Enable();
+    }
 
+    private void OnDisable()
+    {
+        controls.Hand.Disable();
+    }
 }

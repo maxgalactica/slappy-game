@@ -6,18 +6,21 @@ using TMPro;
 
 public class PlayerInput : MonoBehaviour
 {
-    public GameObject plyHand;
-
     public GameObject pivotPos;
 
     public TextMeshProUGUI debugTextTop;
     public TextMeshProUGUI debugTextMiddle;
 
-    public float rotSpeed = 0f;
+    public bool leftHand = false;
+
+    public bool debugMode = false;
 
     public float quaternionTest = 0f;
 
     float degPerFrame = 180f;
+    float triggerValue = 0f;
+    float triggerValueL = 0f;
+    float triggerValueR = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -25,31 +28,31 @@ public class PlayerInput : MonoBehaviour
         
     }
 
+    void OnMove(InputValue value)
+    {
+        //if (leftHand) triggerValue = value.Get<float>();
+        //else triggerValue = -value.Get<float>();
+
+        // if(Gamepad.current.)
+
+        triggerValue = value.Get<float>();
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if (Keyboard.current.fKey.isPressed)
+        if (debugMode)
         {
-            TestRotation();
+            debugTextTop.text = Gamepad.current.rightTrigger.EvaluateMagnitude().ToString();
+            debugTextMiddle.text = triggerValue.ToString();
         }
-
-        Debug.Log(Gamepad.current.rightTrigger.ReadValue().ToString());
-
-        debugTextTop.text = Gamepad.current.rightTrigger.EvaluateMagnitude().ToString();
-        debugTextMiddle.text = pivotPos.transform.localRotation.x.ToString();
 
         TestRotationGamepadTrigger();
     }
 
-    void TestRotation()
-    {
-        transform.RotateAround(pivotPos.transform.position, Vector3.left, rotSpeed * Time.deltaTime);
-    }
-
     void TestRotationGamepadTrigger()
     {
-        float triggerMag = Gamepad.current.rightTrigger.EvaluateMagnitude();
-
-        pivotPos.transform.rotation = Quaternion.Euler(triggerMag * 180, 0, 0);
+        if (leftHand) pivotPos.transform.rotation = Quaternion.Euler(triggerValue * -180, 0, 0);
+        else pivotPos.transform.rotation = Quaternion.Euler(triggerValue * 180, 0, 0);
     }
 }
