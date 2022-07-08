@@ -1,43 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    PlayerHandControls controls;
+    [SerializeField] float speed;
+    [SerializeField] GameObject bullet;
 
-    public GameObject pivotPos;
-    public TextMeshProUGUI debugTextTop;
-    public TextMeshProUGUI debugTextMiddle;
+    Vector2 moveValue;
 
-    private void Awake()
+    public virtual void Move(InputAction.CallbackContext ctx)
     {
-        controls = new PlayerHandControls();
-
-        controls.Hand.MoveLeftHand.performed += ctx => MoveLeft();
-
-        controls.Hand.MoveLeftHand.performed += ctx => MoveRight();
+        moveValue = ctx.ReadValue<Vector2>() * speed * Time.deltaTime;
     }
 
-    void MoveLeft()
+    public void Shoot(InputAction.CallbackContext ctx)
     {
-
+        if (ctx.started)
+        {
+            GameObject.Instantiate(bullet, transform.position, Quaternion.identity);
+        }
     }
 
-    void MoveRight()
+    private void Update()
     {
-
-    }
-
-    private void OnEnable()
-    {
-        controls.Hand.Enable();
-    }
-
-    private void OnDisable()
-    {
-        controls.Hand.Disable();
+        transform.Translate(moveValue);
     }
 }
