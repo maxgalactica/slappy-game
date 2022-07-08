@@ -10,9 +10,29 @@ public class Player : MonoBehaviour
 
     Vector2 moveValue;
 
+    float tVal;
+
+    Vector3 startPos = Vector3.zero;
+
+    int player = 0;
+
+    private void Awake()
+    {
+        startPos = transform.position;
+    }
+
     public virtual void Move(InputAction.CallbackContext ctx)
     {
-        moveValue = ctx.ReadValue<Vector2>() * speed * Time.deltaTime;
+
+    }
+
+    public void MoveP2(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed)
+        {
+            tVal = ctx.ReadValue<float>();
+            transform.position = new Vector3(startPos.x + tVal, startPos.y, startPos.z);
+        }
     }
 
     public void Shoot(InputAction.CallbackContext ctx)
@@ -25,6 +45,6 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        transform.Translate(moveValue);
+        //transform.position = new Vector3(startPos.x + tVal, startPos.y, startPos.z);
     }
 }
