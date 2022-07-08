@@ -15,16 +15,20 @@ public class Player : MonoBehaviour
     public GameObject p1HandL;
     public GameObject p1HandR;
 
+    public Collider hitboxP1L;
+    public Collider hitBoxP1R;
+
     [Space(10)]
     [Header("PLAYER 2")]
     public GameObject p2HandL;
     public GameObject p2HandR;
 
+    public Collider hitboxP2L;
+    public Collider hitBoxP2R;
+
     [Space(10)]
 
     [Header("OTHER")]
-    public Collider hitboxP1;
-    public Collider hitBoxP2;
     public Rigidbody rb;
 
     [SerializeField] float pullbackDistance = 1.2f;
@@ -39,8 +43,8 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(hitboxP1.enabled);
-        Debug.Log(hitBoxP2.enabled);
+        //Debug.Log("##PLAYER ONE## L: " + hitboxP1L.enabled + " R: " + hitBoxP1R.enabled);
+        //Debug.Log("##PLAYER TWO## L: " + hitboxP2L.enabled + " R: " + hitBoxP2R.enabled);
     }
 
     private void Awake()
@@ -50,7 +54,8 @@ public class Player : MonoBehaviour
 
         respawnPos = transform.position;
 
-        hitboxP1.enabled = false;
+        hitboxP1L.enabled = false;
+        hitBoxP1R.enabled = false;
     }
 
     // Keep this around for reference
@@ -70,8 +75,8 @@ public class Player : MonoBehaviour
         {
             tVal = ctx.ReadValue<float>();
 
-            if (tVal > hitboxThreshold && !hitboxP1.enabled) hitboxP1.enabled = true;
-            if (tVal < hitboxThreshold && hitboxP1.enabled) hitboxP1.enabled = false;
+            if (tVal > hitboxThreshold ) hitboxP1L.enabled = true;
+            if (tVal < hitboxThreshold && hitboxP1L.enabled) hitboxP1L.enabled = false;
 
             pivotPosL.transform.rotation = Quaternion.Euler(tVal * 180, 0, 0);
         }
@@ -84,6 +89,10 @@ public class Player : MonoBehaviour
         if (ctx.performed)
         {
             tVal = ctx.ReadValue<float>();
+
+            if (tVal > hitboxThreshold && !hitBoxP1R.enabled) hitBoxP1R.enabled = true;
+            if (tVal < hitboxThreshold && hitBoxP1R.enabled) hitBoxP1R.enabled = false;
+
             pivotPosR.transform.rotation = Quaternion.Euler(tVal * -180, 0, 0);
         }
 
@@ -92,26 +101,26 @@ public class Player : MonoBehaviour
 
     public void MoveP2L(InputAction.CallbackContext ctx)
     {
-        if (!isDead)
-        {
+        //if (!isDead)
+        //{
             if (ctx.performed)
             {
                 tVal = ctx.ReadValue<float>();
                 p2HandL.transform.position = new Vector3(startPosL.x - (tVal * pullbackDistance), startPosL.y, startPosL.z);
             }
-            }
+        //}
     }
 
     public void MoveP2R(InputAction.CallbackContext ctx)
     {
-        if (!isDead)
-        {
+        //if (!isDead)
+        //{
             if (ctx.performed)
             {
                 tVal = ctx.ReadValue<float>();
                 p2HandR.transform.position = new Vector3(startPosR.x - (tVal * pullbackDistance), startPosR.y, startPosR.z);
             }
-        }
+        //}
     }
 
     // bound to right trigger on the gamepad by default if the input action asset is initialized through the player input component
@@ -123,37 +132,30 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void Respawn(InputAction.CallbackContext ctx)
-    {
-        if (isDead)
-        {
-            Debug.Log("Are we getting here?");
-            rb.isKinematic = true;
-            transform.position = respawnPos;
-            transform.rotation = Quaternion.Euler(0, 180, 0);
+    //public void Respawn(InputAction.CallbackContext ctx)
+    //{
+    //    if (isDead)
+    //    {
+    //        Debug.Log("Are we getting here?");
+    //        rb.isKinematic = true;
+    //        transform.position = respawnPos;
+    //        transform.rotation = Quaternion.Euler(0, 180, 0);
 
-            isDead = false;
-            //GetComponent<PlayerInput>().enabled = true;
-        }
-    }
+    //        isDead = false;
+    //        //GetComponent<PlayerInput>().enabled = true;
+    //    }
+    //}
 
-    public void Die()
-    {
-        if (!isDead)
-        {
-            isDead = true;
+    //public void Die()
+    //{
+    //    if (!isDead)
+    //    {
+    //        isDead = true;
 
-            //GetComponent<PlayerInput>().enabled = false;
+    //        //GetComponent<PlayerInput>().enabled = false;
 
-            rb.isKinematic = false;
-            rb.AddForce(Vector3.back * 5, ForceMode.Impulse);
-        }
-    }
-
-    // gates the hitbox from being enabled below the threshold
-    void HitboxGate(GameObject box, float threshold, float value)
-    {
-        bool x = value > threshold ? true : false;
-        box.SetActive(x);
-    }
+    //        rb.isKinematic = false;
+    //        rb.AddForce(Vector3.back * 5, ForceMode.Impulse);
+    //    }
+    //}
 }

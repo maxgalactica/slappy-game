@@ -2,11 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerHealth : MonoBehaviour
+public class SlapPlayer : MonoBehaviour
 {
     Collider hitbox;
-
-    public Player ply;
 
     private void Awake()
     {
@@ -20,7 +18,8 @@ public class PlayerHealth : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             Debug.Log("Other object tagged as player!");
-            other.gameObject.GetComponentInParent<Player>().Die();
+
+            other.gameObject.GetComponentInParent<PlayerTwo>().Die();
         }
     }
 }
