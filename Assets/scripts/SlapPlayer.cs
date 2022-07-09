@@ -13,11 +13,11 @@ public class SlapPlayer : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("OnTriggerEnter method began");
+        //Debug.Log("OnTriggerEnter method began");
 
         if (other.gameObject.tag == "Player")
         {
-            Debug.Log("Other object tagged as player!");
+            //Debug.Log("Other object tagged as player!");
 
             other.gameObject.GetComponentInParent<PlayerTwo>().Die();
         }

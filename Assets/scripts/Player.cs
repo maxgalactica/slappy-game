@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
+    public float shakeWaitTime = 1f;
+
     [Space(10)]
     [Header("PLAYER 1")]
     public GameObject pivotPosL;
@@ -41,6 +43,16 @@ public class Player : MonoBehaviour
 
     Vector3 startPosL, startPosR, respawnPos = Vector3.zero;
 
+    PlayerInput pInput;
+
+    PlayerTwo p2;
+
+    PlayerOneHeat heat;
+
+    Coroutine restRoutine;
+
+    [SerializeField] bool trembling = true;
+
     private void Update()
     {
         //Debug.Log("##PLAYER ONE## L: " + hitboxP1L.enabled + " R: " + hitBoxP1R.enabled);
@@ -56,15 +68,20 @@ public class Player : MonoBehaviour
 
         hitboxP1L.enabled = false;
         hitBoxP1R.enabled = false;
+
+        pInput = GetComponent<PlayerInput>();
+        p2 = GetComponent<PlayerTwo>();
+        heat = GetComponent<PlayerOneHeat>();
     }
 
-    // Keep this around for reference
-    public virtual void Move(InputAction.CallbackContext ctx)
+    private void Start()
     {
-        if (ctx.performed)
-        {
-            //transform.RotateAround(piv)
-        }
+        StartCoroutine(Tremble());
+    }
+
+    public void StartRest()
+    {
+        restRoutine = StartCoroutine(Rest());
     }
 
     // On the Player Input component, the FIRE input action is the right trigger, too scared of breaking everything to rename it
@@ -75,9 +92,21 @@ public class Player : MonoBehaviour
         {
             tVal = ctx.ReadValue<float>();
 
-            if (tVal > hitboxThreshold ) hitboxP1L.enabled = true;
-            if (tVal < hitboxThreshold && hitboxP1L.enabled) hitboxP1L.enabled = false;
+            // probably a better way to do this
+            if (tVal > hitboxThreshold && !hitboxP1L.enabled)
+            {
+                hitboxP1L.enabled = true;
+            }
+            if (tVal < hitboxThreshold && hitboxP1L.enabled)
+            {
+                hitboxP1L.enabled = false;
+            }
 
+            // feel the burn (or don't)
+            if (tVal > 0.1f && !heat.heating) heat.StartHeating();
+            if (tVal <= 0.1f && heat.heating) heat.StopHeating();
+
+            // actually move the hand
             pivotPosL.transform.rotation = Quaternion.Euler(tVal * 180, 0, 0);
         }
 
@@ -101,28 +130,63 @@ public class Player : MonoBehaviour
 
     public void MoveP2L(InputAction.CallbackContext ctx)
     {
-        //if (!isDead)
-        //{
-            if (ctx.performed)
-            {
-                tVal = ctx.ReadValue<float>();
-                p2HandL.transform.position = new Vector3(startPosL.x - (tVal * pullbackDistance), startPosL.y, startPosL.z);
-            }
-        //}
+        if (ctx.performed && !p2.isDead)
+        {
+            tVal = ctx.ReadValue<float>();
+            p2HandL.transform.position = new Vector3(startPosL.x - (tVal * pullbackDistance), startPosL.y, startPosL.z);
+        }
+        if (ctx.canceled && !p2.isDead)
+        {
+            tVal = 0;
+            p2HandL.transform.position = startPosL;
+        }
     }
 
     public void MoveP2R(InputAction.CallbackContext ctx)
     {
-        //if (!isDead)
-        //{
-            if (ctx.performed)
-            {
-                tVal = ctx.ReadValue<float>();
-                p2HandR.transform.position = new Vector3(startPosR.x - (tVal * pullbackDistance), startPosR.y, startPosR.z);
-            }
-        //}
+        if (ctx.performed && !p2.isDead)
+        {
+            tVal = ctx.ReadValue<float>();
+            p2HandR.transform.position = new Vector3(startPosR.x - (tVal * pullbackDistance), startPosR.y, startPosR.z);
+        }
+        if (ctx.canceled && !p2.isDead)
+        {
+            tVal = 0;
+            p2HandR.transform.position = startPosR;
+        }
     }
 
+    IEnumerator Tremble()
+    {
+        float intensity = 0.10f;
+
+        while (trembling)
+        {
+            Debug.Log("In the coroutine");
+            float currentHeat = heat.GetHeat() * 0.01f;
+
+            Vector3 tempShakePos = new Vector3(
+                Mathf.Clamp(Random.Range(0.0f, 0.25f) * currentHeat, 0, 0.25f),
+                Mathf.Clamp(Random.Range(0.0f, 0.25f) * currentHeat, 0, 0.25f),
+                Mathf.Clamp(Random.Range(0.0f, 0.25f) * currentHeat, 0, 0.25f));
+
+            transform.localPosition += tempShakePos;
+            yield return new WaitForSeconds(shakeWaitTime);
+            transform.localPosition -= tempShakePos;
+            yield return new WaitForSeconds(shakeWaitTime);
+        }
+    }
+
+    IEnumerator Rest()
+    {
+        pInput.currentActionMap.Disable();
+
+        yield return new WaitForSeconds(3f);
+
+        pInput.currentActionMap.Enable();
+    }
+
+    // ###NOT IN USE###
     // bound to right trigger on the gamepad by default if the input action asset is initialized through the player input component
     public void Shoot(InputAction.CallbackContext ctx)
     {
@@ -131,31 +195,4 @@ public class Player : MonoBehaviour
             //GameObject.Instantiate(bullet, transform.position, Quaternion.identity);
         }
     }
-
-    //public void Respawn(InputAction.CallbackContext ctx)
-    //{
-    //    if (isDead)
-    //    {
-    //        Debug.Log("Are we getting here?");
-    //        rb.isKinematic = true;
-    //        transform.position = respawnPos;
-    //        transform.rotation = Quaternion.Euler(0, 180, 0);
-
-    //        isDead = false;
-    //        //GetComponent<PlayerInput>().enabled = true;
-    //    }
-    //}
-
-    //public void Die()
-    //{
-    //    if (!isDead)
-    //    {
-    //        isDead = true;
-
-    //        //GetComponent<PlayerInput>().enabled = false;
-
-    //        rb.isKinematic = false;
-    //        rb.AddForce(Vector3.back * 5, ForceMode.Impulse);
-    //    }
-    //}
 }
