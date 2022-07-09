@@ -54,6 +54,7 @@ public class PlayerOneHeat : MonoBehaviour
 
             if (currentHeat > 5)
             {
+                StopHeating();
                 player.StartRest();
                 yield break;
             }
@@ -63,6 +64,8 @@ public class PlayerOneHeat : MonoBehaviour
 
     IEnumerator RemoveHeat()
     {
+        heating = false;
+
         while(currentHeat > 0)
         {
             currentHeat -= 1 * Time.deltaTime;

@@ -166,9 +166,9 @@ public class Player : MonoBehaviour
             float currentHeat = heat.GetHeat() * 0.01f;
 
             Vector3 tempShakePos = new Vector3(
-                Mathf.Clamp(Random.Range(0.0f, 0.25f) * currentHeat, 0, 0.25f),
-                Mathf.Clamp(Random.Range(0.0f, 0.25f) * currentHeat, 0, 0.25f),
-                Mathf.Clamp(Random.Range(0.0f, 0.25f) * currentHeat, 0, 0.25f));
+                Mathf.Clamp(Random.Range(0.0f, 0.25f) * currentHeat, 0, 0.50f),
+                Mathf.Clamp(Random.Range(0.0f, 0.25f) * currentHeat, 0, 0.50f),
+                Mathf.Clamp(Random.Range(0.0f, 0.25f) * currentHeat, 0, 0.50f));
 
             transform.localPosition += tempShakePos;
             yield return new WaitForSeconds(shakeWaitTime);
