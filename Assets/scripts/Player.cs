@@ -37,9 +37,10 @@ public class Player : MonoBehaviour
     [SerializeField] float speed;
     [SerializeField] float hitboxThreshold;
 
-    float tVal;
-
     bool isDead = false;
+
+    float tVal;
+    public float TVal { get; }
 
     Vector3 startPosL, startPosR, respawnPos = Vector3.zero;
 
@@ -110,7 +111,7 @@ public class Player : MonoBehaviour
             pivotPosL.transform.rotation = Quaternion.Euler(tVal * 180, 0, 0);
         }
 
-        if (ctx.canceled) pivotPosL.transform.rotation = Quaternion.Euler(0, 0, 0);
+        //if (ctx.control.IsActuated()) pivotPosL.transform.rotation = Quaternion.Euler(0, 0, 0);
     }
 
     public void MoveP1R(InputAction.CallbackContext ctx)
@@ -166,9 +167,9 @@ public class Player : MonoBehaviour
             float currentHeat = heat.GetHeat() * 0.01f;
 
             Vector3 tempShakePos = new Vector3(
-                Mathf.Clamp(Random.Range(0.0f, 0.25f) * currentHeat, 0, 0.50f),
-                Mathf.Clamp(Random.Range(0.0f, 0.25f) * currentHeat, 0, 0.50f),
-                Mathf.Clamp(Random.Range(0.0f, 0.25f) * currentHeat, 0, 0.50f));
+                Mathf.Clamp(Random.Range(0.0f, 0.35f) * currentHeat, 0, 0.60f),
+                Mathf.Clamp(Random.Range(0.0f, 0.35f) * currentHeat, 0, 0.60f),
+                Mathf.Clamp(Random.Range(0.0f, 0.35f) * currentHeat, 0, 0.60f));
 
             transform.localPosition += tempShakePos;
             yield return new WaitForSeconds(shakeWaitTime);
